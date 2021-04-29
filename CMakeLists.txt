@@ -13,3 +13,8 @@ set(LAB2 lab2/lab2.c lab2/lab2.h lab2/main.c)
 add_executable(lab2_d ${LAB2})
 target_link_libraries(lab2_d PRIVATE m)
 
+include_directories(lab3)
+set(LAB3 lab3/lab3.c lab3/lab3.h lab3/main.c)
+add_executable(lab3_d ${LAB2})
+target_link_libraries(lab3_d PRIVATE m)
+
