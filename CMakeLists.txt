@@ -14,7 +14,6 @@ add_executable(lab2_d ${LAB2})
 target_link_libraries(lab2_d PRIVATE m)
 
 include_directories(lab3)
-set(LAB3 lab3/lab3.c lab3/lab3.h lab3/main.c)
+set(LAB3 lab3/lab3.c lab3/lab3.h lab3/main.c lab3/conj.c lab3/conj.h)
 add_executable(lab3_d ${LAB3})
 target_link_libraries(lab3_d PRIVATE m)
-
