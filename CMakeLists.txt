@@ -19,6 +19,6 @@ add_executable(lab3_d ${LAB3})
 target_link_libraries(lab3_d PRIVATE m)
 
 include_directories(lab4)
-set(LAB4 lab4/utils.c lab4/utils.h lab4/main.c lab4/revit.c lab4/revit.h)
+set(LAB4 lab4/utils.c lab4/utils.h lab4/main.c lab4/invit.c lab4/invit.h)
 add_executable(lab4_d ${LAB4})
 target_link_libraries(lab4_d PRIVATE m)
