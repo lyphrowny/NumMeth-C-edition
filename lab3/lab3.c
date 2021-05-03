@@ -2,94 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <math.h>
 
 #include "lab3.h"
-
-float dotProduct(const size_t* rows, const float* vec1, const float* vec2) {
-    float res = 0;
-    for (size_t i = 0; i < *rows; i++)
-        res += vec1[i] * vec2[i];
-    return res;
-}
-
-float** sc_matMul(const float* scal, const size_t* rows, const size_t* cols, const float** mat) {
-    float** res;
-    res = malloc(sizeof *res * *rows);
-    if (res) {
-        for (size_t i = 0; i < *rows; i++) {
-            res[i] = malloc(sizeof *res[i] * *cols);
-            for (size_t j = 0; j < *cols; j++)
-                res[i][j] = *scal * mat[i][j];
-        }
-    }
-    return res;
-}
-
-float* sc_vecMul(const float* scal, const size_t* rows, const float* vec, float* res) {
-    if (res == NULL)
-        res = malloc(sizeof(float) * *rows);
-    if (res != NULL)
-        for (size_t i = 0; i < *rows; i++)
-            res[i] = vec[i] * *scal;
-    return res;
-}
-
-// [a, b] * [b, c] -> [a, c]
-float**
-mat_matMul(const size_t* rows, const size_t* _cols, const size_t* cols, const float** mat1, const float** mat2) {
-    float** res = NULL;
-    if ((res = malloc(sizeof *res * *rows)) != NULL)
-        for (size_t i = 0; i < *rows; i++)
-            if ((res[i] = malloc(sizeof *res[i] * *cols)) != NULL)
-                for (size_t k = 0; k < *cols; k++) {
-                    res[i][k] = 0;
-                    for (size_t j = 0; j < *_cols; j++)
-                        res[i][k] += mat1[i][j] * mat2[j][k];
-                }
-    return res;
-}
-
-// [n, m] x [m, 1] -> [n, 1]
-float* mat_vecMul(const float* vec, const size_t* rows, const size_t* cols, const float** mat, float* res) {
-    if (res == NULL)
-        res = malloc(sizeof(float) * *rows);
-    if (res != NULL) {
-        memset(res, 0, sizeof(float) * *rows);
-        for (size_t i = 0; i < *rows; i++)
-            for (size_t k = 0; k < *cols; k++)
-                res[i] += mat[i][k] * vec[k];
-    }
-    return res;
-}
-
-float** mat_matSub(const size_t* rows, const size_t* cols, const float** mat1, const float** mat2) {
-    float** res;
-    if ((res = malloc(sizeof *res * *rows)) != NULL)
-        for (size_t i = 0; i < *rows; i++)
-            if ((res[i] = malloc(sizeof *res[i] * *cols)) != NULL)
-                for (size_t j = 0; j < *cols; j++)
-                    res[i][j] = mat1[i][j] - mat2[i][j];
-    return res;
-}
-
-float* vec_vecSub(const size_t* rows, const float* vec1, const float* vec2, float* res) {
-    if (res == NULL)
-        res = malloc(sizeof(float) * *rows);
-    if (res != NULL)
-        for (size_t i = 0; i < *rows; i++)
-            res[i] = vec1[i] - vec2[i];
-    return res;
-}
-
-float* vec_vecAdd(const size_t* rows, const float* vec1, const float* vec2, float* res) {
-    if (res == NULL)
-        res = malloc(sizeof(float) * *rows);
-    if (res != NULL)
-        for (size_t i = 0; i < *rows; i++)
-            res[i] = vec1[i] + vec2[i];
-    return res;
-}
 
 void freeMat(const size_t* rows, float** mat) {
     for (size_t i = 0; i < *rows; i++)
@@ -160,13 +74,6 @@ void printMatrix(const size_t* rows, const size_t* cols, float** mat) {
     puts("");
 }
 
-void printVec(const char* entrance, const char* exit, const size_t* rows, const float* vec) {
-    puts(entrance);
-    for (size_t i = 0; i < *rows; i++)
-        printf("%-14.8f", vec[i]);
-    puts(exit);
-}
-
 void appendSolution(const size_t* rows, const float* solution, const char* filename) {
     FILE* fp;
 
@@ -188,38 +95,4 @@ void appendSolution(const size_t* rows, const float* solution, const char* filen
     for (size_t i = 0; i < *rows; i++)
         fprintf(fp, "%f ", solution[i]);
     fclose(fp);
-}
-
-float norm2(const size_t* rows, const float* vec) {
-    float sum = 0;
-    for (size_t i = 0; i < *rows; i++)
-        sum += pow(vec[i], 2);
-    return sqrt(sum);
-}
-
-float* CGM(const float* precision, const size_t* rows, const size_t* cols, const float** mat, const float* b) {
-    float* res = calloc(*rows, sizeof(float)); // filled with 0s
-    float* tmp = mat_vecMul(res, rows, cols, mat, NULL), * q = NULL;
-    float* e = vec_vecSub(rows, b, tmp, NULL), * p = malloc(sizeof(float) * *rows);
-    memcpy(p, e, sizeof(float) * *rows);
-    float alpha, beta;
-    int k = 0;
-
-    while (norm2(rows, e) > *precision && k++ < *rows) {
-        q = mat_vecMul(p, rows, cols, mat, q);
-        alpha = dotProduct(rows, e, p) / dotProduct(rows, q, p);
-        res = vec_vecAdd(rows, res, sc_vecMul(&alpha, rows, p, tmp), res);
-        e = vec_vecSub(rows, e, sc_vecMul(&alpha, rows, q, tmp), e);
-
-        if (norm2(rows, e) <= *precision)
-            break;
-
-        beta = dotProduct(rows, e, q) / dotProduct(rows, p, q);
-        p = vec_vecSub(rows, e, sc_vecMul(&beta, rows, p, tmp), p);
-    }
-    free(e);
-    free(p);
-    free(q);
-    free(tmp);
-    return res;
 }
