@@ -17,3 +17,8 @@ include_directories(lab3)
 set(LAB3 lab3/lab3.c lab3/lab3.h lab3/main.c lab3/conj.c lab3/conj.h)
 add_executable(lab3_d ${LAB3})
 target_link_libraries(lab3_d PRIVATE m)
+
+include_directories(lab4)
+set(LAB4 lab4/utils.c lab4/utils.h lab4/main.c lab4/revit.c lab4/revit.h)
+add_executable(lab4_d ${LAB4})
+target_link_libraries(lab4_d PRIVATE m)
