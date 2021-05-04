@@ -2,21 +2,34 @@
 
 #include "invit.h"
 
-void LUDooDec(float** L, float** U, const float** A, const size_t* order) {
+void LUDooDec(float** LU, const float** A, const size_t* order) {
     for (size_t i = 0; i < *order; i++) {
         for (size_t j = 0; j < *order; j++) {
-            if (i <= j) {
-                U[i][j] = A[i][j];
+            LU[i][j] = A[i][j];
+            if (i <= j)
                 for (size_t k = 0; k < i; k++)
-                    U[i][j] -= L[i][k] * U[k][j];
-                L[i][j] = (i == j ? 1. : 0.);
-            } else {
-                L[i][j] = A[i][j];
+                    LU[i][j] -= LU[i][k] * LU[k][j];
+            else {
                 for (size_t k = 0; k < j; k++)
-                    L[i][j] -= L[i][k] * U[k][j];
-                L[i][j] /= U[j][j];
-                U[i][j] = 0.;
+                    LU[i][j] -= LU[i][k] * LU[k][j];
+                LU[i][j] /= LU[j][j];
             }
         }
     }
+}
+
+void solveLU(float* res, const float** LU, const float* b, size_t* order) {
+    float* y = calloc(*order, sizeof(float));
+    for (size_t i = 0; i < *order; i++) {
+        y[i] = b[i];
+        for (size_t j = 0; j < i; j++)
+            y[i] -= LU[i][j] * y[j];
+    }
+    for (size_t i = *order - 1; i < *order; i--) {
+        res[i] = y[i];
+        for (size_t j = i + 1; j < *order; j++)
+            res[i] -= LU[i][j] * res[j];
+        res[i] /= LU[i][i];
+    }
+    free(y);
 }
