@@ -43,7 +43,18 @@ char** readDir(const char* dir_name, size_t* capacity) {
         if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
             if (curr >= *capacity - 1) {
                 *capacity <<= 1;
-                filenames = (char**) realloc(filenames, *capacity * (sizeof(char*)));
+                char** _filenames;
+                _filenames = (char**) realloc(filenames, *capacity * (sizeof(char*)));
+                if (_filenames != NULL) {
+                    filenames = _filenames;
+                    for (size_t i = curr; i < *capacity; i++)
+                        filenames[i] = NULL;
+                }
+                else {
+                    free(filenames);
+                    fprintf(stderr, "could not allocate memory for filenames: %s\n", strerror(errno));
+                    return NULL;
+                }
             }
             size_t str_size = sizeof(dp->d_name) + sizeof(char*) * (strlen(dir_name) + 1);
             filenames[curr] = (char*) malloc(str_size);

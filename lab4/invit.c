@@ -1,6 +1,10 @@
 #include <stdlib.h>
+#include <math.h>
+#include <memory.h>
 
 #include "invit.h"
+
+int K;
 
 void LUDooDec(float** LU, const float** A, const size_t* order) {
     for (size_t i = 0; i < *order; i++) {
@@ -32,4 +36,46 @@ void solveLU(float* res, const float** LU, const float* b, size_t* order) {
         res[i] /= LU[i][i];
     }
     free(y);
+}
+
+float dot(const float* vec1, const float* vec2, const size_t* order) {
+    float sum = 0;
+    for (size_t i = 0; i < *order; i++)
+        sum += vec1[i] * vec2[i];
+    return sum;
+}
+
+void vec_sc(float* dest, float* vec, float sc, const char op, const size_t* order) {
+    for (size_t i = 0; i < *order; i++) {
+        if (op == '/') dest[i] = vec[i] / sc;
+        else if (op == '*') dest[i] = vec[i] * sc;
+        else if (op == '+') dest[i] = vec[i] + sc;
+        else dest[i] = vec[i] - sc;
+    }
+}
+
+float infNorm(const float* vec, const size_t* order) {
+    float sum = 0;
+    for (size_t i = 0; i < *order; i++)
+        if (sum < fabs(vec[i]))
+            sum = vec[i];
+    return sum;
+}
+
+void
+SPInvIt(float* dest, const float** A, const float** LU, float* vec, const float* tol, float* eig, const size_t* order) {
+    float eig_, norm = infNorm(vec, order);
+    vec_sc(dest, vec, norm, '/', order);
+    K = 0;
+
+    do {
+        solveLU(vec, LU, dest, order);
+        eig_ = *eig, norm = infNorm(vec, order), *eig = 1 / norm;
+        vec_sc(dest, vec, norm, '/', order);
+        K++;
+    } while (fabs(*eig - eig_) > *tol);
+}
+
+int getIters() {
+    return K;
 }
