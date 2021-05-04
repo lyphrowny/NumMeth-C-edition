@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <dirent.h>
 #include <errno.h>
 
 #include "lab3.h"
@@ -9,6 +11,42 @@ void freeMat(const size_t* rows, float** mat) {
     for (size_t i = 0; i < *rows; i++)
         free(mat[i]);
     free(mat);
+}
+
+void freeFilenames(char** filenames, size_t capacity) {
+    for (size_t i = 0; i < capacity; i++)
+        free(filenames[i]);
+    free(filenames);
+}
+
+char** readDir(const char* dir_name, size_t* capacity) {
+    struct dirent* dp;
+    DIR* dir = opendir(dir_name);
+    *capacity = 10;
+    size_t curr = 0;
+    char** filenames = (char**) calloc(*capacity, sizeof(char*));
+    // Unable to open directory stream
+    if (!dir) {
+        fprintf(stderr, "could not read directory: %s\n", strerror(errno));
+        free(filenames);
+        return NULL;
+    }
+    while ((dp = readdir(dir)) != NULL) {
+        if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
+            if (curr >= *capacity - 1) {
+                *capacity <<= 1;
+                filenames = (char**) realloc(filenames, *capacity * (sizeof(char*)));
+            }
+            size_t str_size = sizeof(dp->d_name) + sizeof(char*) * (strlen(dir_name) + 1);
+            filenames[curr] = (char*) malloc(str_size);
+            sprintf(filenames[curr++], "%s/%s", dir_name, dp->d_name);
+        }
+    }
+    filenames[curr] = NULL;
+    // Close directory stream
+    closedir(dir);
+
+    return filenames;
 }
 
 float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
