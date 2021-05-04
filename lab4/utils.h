@@ -4,6 +4,8 @@
 
 void freeMat(const size_t* rows, float** mat);
 
+float** allocateMat(const size_t* rows, const size_t* cols);
+
 void freeFilenames(char** filenames, size_t capacity);
 
 char** readDir(const char* dir_name, size_t* capacity);

@@ -13,6 +13,14 @@ void freeMat(const size_t* rows, float** mat) {
     free(mat);
 }
 
+float** allocateMat(const size_t* rows, const size_t* cols) {
+    float** mat = malloc(sizeof(float*) * *rows);
+    if (mat != NULL)
+        for (size_t i = 0; i < *rows; i++)
+            mat[i] = calloc(*cols, sizeof(float));
+    return mat;
+}
+
 void freeFilenames(char** filenames, size_t capacity) {
     for (size_t i = 0; i < capacity; i++)
         free(filenames[i]);
