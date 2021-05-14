@@ -21,13 +21,13 @@ int main() {
 
     FILE* p_bisect, *p_secant, *t_bisect, *t_secant;
 
-    if ((p_bisect = fopen("../p_bisect.txt", "w")) == NULL)
+    if ((p_bisect = fopen("./p_bisect.txt", "w")) == NULL)
         return 0;
-    if ((p_secant = fopen("../p_secant.txt", "w")) == NULL)
+    if ((p_secant = fopen("./p_secant.txt", "w")) == NULL)
         return 0;
-    if ((t_bisect = fopen("../t_bisect.txt", "w")) == NULL)
+    if ((t_bisect = fopen("./t_bisect.txt", "w")) == NULL)
         return 0;
-    if ((t_secant = fopen("../t_secant.txt", "w")) == NULL)
+    if ((t_secant = fopen("./t_secant.txt", "w")) == NULL)
         return 0;
 
     for (int i = 1; i < 7; i++) {

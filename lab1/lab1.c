@@ -102,19 +102,16 @@ float bisect(float a, float b, float precision, float (* func)(float)) {
 }
 
 float secant(float a, float b, float precision, float (* func)(float)) {
-    float f_a = func(a), f_b = func(b);
+    float f_a = func(a), f_b = func(b), root;
     while (fabsf(b - a) > precision) {
         SECANT_ITER++;
-        a = b - f_b * (b - a) / (f_b - f_a);
-        f_a = func(a);
-        if (f_a == 0)
-            return a;
-        b = a - f_a * (a - b) / (f_a - f_b);
-        f_b = func(b);
+        root = b - f_b * (b - a) / (f_b - f_a);
+        a = b, f_a = f_b;
+        b = root, f_b = func(root);
         if (f_b == 0)
-            return b;
+            return root;
     }
-    return b;
+    return root;
 }
 
 long int get_bisect_iter() {
