@@ -5,13 +5,13 @@
 
 #include "lab3.h"
 
-void freeMat(const size_t* rows, float** mat) {
+void freeMat(const size_t* rows, double** mat) {
     for (size_t i = 0; i < *rows; i++)
         free(mat[i]);
     free(mat);
 }
 
-float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
+double** readMatrix(size_t* rows, size_t* cols, const char* filename) {
     if (rows == NULL || cols == NULL || filename == NULL)
         return NULL;
 
@@ -23,15 +23,15 @@ float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
         return NULL;
     }
 
-    float** matrix = NULL, ** tmp;
+    double** matrix = NULL, ** tmp;
     char line[2048];
 
     while (fgets(line, sizeof(line), fp) && strcmp(line, "\n") != 0) { // if empty line, end of input
         if (*cols == 0) { // determine the size of the columns based on the first row
             char* scan = line;
-            float dummy;
+            double dummy;
             int offset = 0;
-            while (sscanf(scan, "%f%n", &dummy, &offset) == 1) {
+            while (sscanf(scan, "%lf%n", &dummy, &offset) == 1) {
                 scan += offset;
                 (*cols)++;
             }
@@ -54,7 +54,7 @@ float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
         int offset = 0;
         char* scan = line;
         for (size_t j = 0; j < *cols; ++j) {
-            if (sscanf(scan, "%f%n", matrix[*rows] + j, &offset) == 1)
+            if (sscanf(scan, "%lf%n", matrix[*rows] + j, &offset) == 1)
                 scan += offset;
             else
                 matrix[*rows][j] = 0; // could not read, set cell to 0
@@ -65,7 +65,7 @@ float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
     return matrix;
 }
 
-void printMatrix(const size_t* rows, const size_t* cols, float** mat) {
+void printMatrix(const size_t* rows, const size_t* cols, double** mat) {
     for (size_t i = 0; i < *rows; ++i) {
         for (size_t j = 0; j < *cols; ++j)
             printf("%-10.4f ", mat[i][j]);
@@ -74,7 +74,7 @@ void printMatrix(const size_t* rows, const size_t* cols, float** mat) {
     puts("");
 }
 
-void appendSolution(const size_t* rows, const float* solution, const char* filename) {
+void appendSolution(const size_t* rows, const double* solution, const char* filename) {
     FILE* fp;
 
     if ((fp = fopen(filename, "r+")) == NULL) {

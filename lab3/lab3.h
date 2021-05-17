@@ -2,10 +2,10 @@
 
 #include <stdlib.h>
 
-void freeMat(const size_t* rows, float** mat);
+void freeMat(const size_t* rows, double** mat);
 
-float** readMatrix(size_t* rows, size_t* cols, const char* filename);
+double** readMatrix(size_t* rows, size_t* cols, const char* filename);
 
-void printMatrix(const size_t* rows, const size_t* cols, float** mat);
+void printMatrix(const size_t* rows, const size_t* cols, double** mat);
 
-void appendSolution(const size_t* rows, const float* solution, const char* filename);
+void appendSolution(const size_t* rows, const double* solution, const char* filename);

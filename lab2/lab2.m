@@ -7,14 +7,15 @@ fig = figure;
 for filename = filenames
     [mat, sol, res] = readMatrix(filename);
     disp(normError(sol, res));
-    semilogx(normError(sol, res), cond(mat), "*");
+    disp(cond(mat));
+    semilogy(cond(mat), normError(sol, res), "*");
     hold on; 
 end
 grid on;
-ttl = "cond number vs. solution error";
+ttl = "solution error vs. cond number";
 title(ttl);
-xlabel("solution error");
-ylabel("cond number");
+ylabel("solution error");
+xlabel("cond number");
 exportgraphics(fig, strcat(path, "/", strjoin(string(ttl)).replace(" ","_").replace("\",""),".pdf"), "ContentType", "vector");
 hold off;
 
@@ -32,6 +33,7 @@ disp(filename);
     end
     lines = lines';
     mat = str2double(lines(1:end-2).split());
+    mat = mat(:, 1:end-1);
     sol = str2double(lines(end-1).split());
     res = lines(end).split();
     res = str2double(res(1:end - res.contains(""))); % remove the "" char at the end

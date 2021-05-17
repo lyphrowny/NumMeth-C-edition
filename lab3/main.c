@@ -39,20 +39,22 @@ int main(void) {
     size_t cols, rows;
 
     for (size_t filename = 0; filename < curr; filename++) {
-        float** matrix = readMatrix(&rows, &cols, filenames[filename]);
+        double** matrix = readMatrix(&rows, &cols, filenames[filename]);
         if (matrix == NULL) {
             fprintf(stderr, "could not read matrix\n");
             return 1;
         }
 
-        float b[rows];
+        double b[rows];
         cols--;
         for (size_t i = 0; i < rows; i++)
             b[i] = matrix[i][cols];
 
-        float* res = calloc(rows, sizeof(float));;
-        float precision = 0.1;
-        float param[] = {0.63, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.8, 0.9, 1., 1.1, 1.2, 1.3, 1.4, 1.5};
+        printMatrix(&rows, &cols, matrix);
+
+        double* res = calloc(rows, sizeof(double));;
+        double precision = 0.1;
+        double param[] = {0.63, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.8, 0.9, 1., 1.1, 1.2, 1.3, 1.4, 1.5};
         FILE* fp;
         if ((fp = fopen("./gen_data/sols.txt", "w")) != NULL) {
             for (size_t i = 0; i < sizeof(param) / sizeof(param[0]); i++) {
@@ -66,9 +68,9 @@ int main(void) {
         }
         fclose(fp);
         if ((fp = fopen("./gen_data/prec.txt", "w")) != NULL) {
-            for (size_t i = 0; i < 10; i++) {
+            for (size_t i = 0; i < 16; i++) {
                 CGM(res, matrix, b, &precision, &rows);
-                fprintf(fp, "%-14.10f %-5zu\n", precision, getIters());
+                fprintf(fp, "%-20.17f %-5zu\n", precision, getIters());
                 precision /= 10;
             }
         }

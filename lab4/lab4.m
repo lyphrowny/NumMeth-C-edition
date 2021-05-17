@@ -6,13 +6,13 @@ filenames = string(strcat(dir_name, "/", {directory(~[directory.isdir]).name}));
 for filename = filenames
     fig = figure;
     [tol, eig, it] = readFile(filename);
-    semilogy(it, tol, "*-");
+    semilogx(tol,it, "*-");
     grid on;
     info = filename.split('_');
-    ttl = strcat("tolerance vs. iterations (", info(end).replace(".txt",""), " separability)");
+    ttl = strcat("iterations vs. precision (", info(end).replace(".txt",""), " separability)");
     title(ttl);
-    xlabel("iterations");
-    ylabel("tolerance");
+    ylabel("iterations");
+    xlabel("precision");
     exportgraphics(fig, strcat(path, "/", strjoin(string(ttl)).replace(" ","_").replace("\",""),".pdf"), "ContentType", "vector");
 end
 

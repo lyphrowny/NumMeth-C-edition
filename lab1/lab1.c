@@ -102,7 +102,7 @@ float bisect(float a, float b, float precision, float (* func)(float)) {
 }
 
 float secant(float a, float b, float precision, float (* func)(float)) {
-    float f_a = func(a), f_b = func(b), root;
+    float f_a = func(a), f_b = func(b), root = b;
     while (fabsf(b - a) > precision) {
         SECANT_ITER++;
         root = b - f_b * (b - a) / (f_b - f_a);

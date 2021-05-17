@@ -1,8 +1,8 @@
 #pragma once
 
-void mat_vecMul(float* dest, const float** mat, const float* vec, const size_t* order);
-double norm2(const float* vec, const size_t* order);
-double dot(const float* vec1, const float* vec2, const size_t* order);
-void linComb(float* dest, float a, float* vec1, float b, float* vec2, const size_t* order);
-void CGM(float* dest, float** mat, float* b, const float* eps, const size_t* order);
+void mat_vecMul(double* dest, const double** mat, const double* vec, const size_t* order);
+double norm2(const double* vec, const size_t* order);
+double dot(const double* vec1, const double* vec2, const size_t* order);
+void linComb(double* dest, double a, double* vec1, double b, double* vec2, const size_t* order);
+void CGM(double* dest, double** mat, double* b, const double* eps, const size_t* order);
 size_t getIters();

@@ -1,13 +1,19 @@
 import numpy as np
 from random import random
 
-for i in range(20):
+step = 250
+
+for i in range(1, 41):
     n = int(random() * 50 + 10)
-    m = [[random() * 100 for _ in range(n)] for _ in range(n)]
+    diag = np.diagflat(np.linspace(1, step*i, n))
+    orth, _ = np.linalg.qr(np.random.rand(n, n))
+    mat = orth @ diag @ np.transpose(orth)
+    cond = np.linalg.cond(mat)
+
     b = [random() * 100 for _ in range(n)]
-    s = np.linalg.solve(m, b)
-    assert len(s) == len(m)
-    with open(f"gen_files/gen_mat{n}_{i}.txt", 'w', encoding='utf8') as f:
-        for row, b_ in zip(m, b):
+    s = np.linalg.solve(mat, b)
+
+    with open(f"gen_files/gen_mat{n}_{int(cond)}.txt", 'w', encoding='utf8') as f:
+        for row, b_ in zip(mat, b):
             f.write(f"{' '.join(map(str, row))} {b_}\n")
         f.write(f"{' '.join(map(str, s))}\n")

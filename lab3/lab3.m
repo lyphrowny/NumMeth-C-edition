@@ -24,6 +24,8 @@ lines = readFile(mat_).split();
 mat = str2double(lines(:, 1:end-1));
 b = str2double(lines(:, end));
 
+%disp(cgs(mat, b, 1e-16));
+
 params = params';
 det = det';
 
@@ -32,22 +34,22 @@ norms = [];
 for i = 1:size(gen_sols, 1)
     norms = [norms, abs(norm(sols(i, :)) - norm(gen_sols(i, :)))];
 end
-loglog(norms, det, '*-');
+loglog(det, norms, '*-');
 grid on;
-ttl = "determinant vs. solution error";
+ttl = "solution error vs. determinant";
 title(ttl);
-xlabel("solution error");
-ylabel("determinant");
+ylabel("solution error");
+xlabel("determinant");
 exportgraphics(fig, strcat(path, "/", strjoin(string(ttl)).replace(" ","_").replace("\",""),".pdf"), "ContentType", "vector");
 hold off;
 
 fig = figure;
-semilogy(iters, prec, '*-');
+semilogx(prec, iters, '*-');
 grid on;
 ttl = "iterations vs. precison";
 title(ttl);
-xlabel("iterations");
-ylabel("precision");
+ylabel("iterations");
+xlabel("precision");
 exportgraphics(fig, strcat(path, "/", strjoin(string(ttl)).replace(" ","_").replace("\",""),".pdf"), "ContentType", "vector");
 hold off;
 
