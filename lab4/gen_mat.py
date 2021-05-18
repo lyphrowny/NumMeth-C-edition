@@ -3,19 +3,15 @@ from random import random
 
 n = int(random() * 20 + 5)
 for tol in range(10):
-    orth, _ = np.linalg.qr(np.random.rand(n, n))
-    coeffs = list(range(1, n + 1))
+    g = np.random.rand(n, n)
+    coeffs = list(range(n))
     np.random.shuffle(coeffs)
-    sep = 10**(-tol)
+    sep = 10 ** (-tol)
+    init_eig = n * sep
+    mat = np.diagflat([init_eig + k * sep for k in coeffs])
+    mat = g @ mat @ np.linalg.inv(g)
 
-    mat = np.diagflat([n + k * sep for k in coeffs])
-    mat = np.transpose(orth) @ mat @ orth
-
-    eigs = dict(zip(*np.linalg.eig(mat)))
-    eig = min(eigs)
-    eigvec = eigs[eig]
     with open(f"./gen_files/gen_mat_{n}_{sep}.txt", 'w', encoding='utf8') as f:
         for row in mat:
             f.write(f"{' '.join(map(str, row))}\n")
-        f.write(f'\n\n{eig}\n\n')
-        f.write(f'{" ".join(map(str, eigvec))}')
+        f.write(f'\n\n{init_eig}\n\n')
