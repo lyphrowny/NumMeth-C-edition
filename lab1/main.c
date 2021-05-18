@@ -6,7 +6,8 @@
 int main() {
 
     // (x+p)(x-0.739085)(x-2p)(x-3p) = 0 (0.739085 - solution of x = cos(x))
-    float polynom[] = {1, -13.3055, 19.1572, 178.743, -137.498};
+//    float polynom[] = {1, -13.3055, 19.1572, 178.743, -137.498};
+    float polynom[] = {1, -25.8718, 127.141, 539.886, -458.325};
     init_coeffs(polynom, sizeof(polynom) / sizeof(polynom[0]));
 
     float lims[sizeof(limits) / sizeof(limits[0])];
