@@ -6,7 +6,7 @@
 
 int K;
 
-void LUDooDec(float** LU, const float** A, const size_t* order) {
+void LUDooDec(double** LU, const double** A, const size_t* order) {
     for (size_t i = 0; i < *order; i++) {
         for (size_t j = 0; j < *order; j++) {
             LU[i][j] = A[i][j];
@@ -22,8 +22,8 @@ void LUDooDec(float** LU, const float** A, const size_t* order) {
     }
 }
 
-void solveLU(float* res, const float** LU, const float* b, size_t* order) {
-    float* y = calloc(*order, sizeof(float));
+void solveLU(double* res, const double** LU, const double* b, const size_t* order) {
+    double* y = calloc(*order, sizeof(double));
     for (size_t i = 0; i < *order; i++) {
         y[i] = b[i];
         for (size_t j = 0; j < i; j++)
@@ -38,14 +38,22 @@ void solveLU(float* res, const float** LU, const float* b, size_t* order) {
     free(y);
 }
 
-float dot(const float* vec1, const float* vec2, const size_t* order) {
-    float sum = 0;
+double dot(const double* vec1, const double* vec2, const size_t* order) {
+    double sum = 0;
     for (size_t i = 0; i < *order; i++)
         sum += vec1[i] * vec2[i];
     return sum;
 }
 
-void vec_sc(float* dest, float* vec, float sc, const char op, const size_t* order) {
+void mat_vecMul(double* dest, const double** mat, const double* vec, const size_t* order) {
+    for (size_t i = 0; i < *order; i++) {
+        dest[i] = 0;
+        for (size_t j = 0; j < *order; j++)
+            dest[i] += mat[i][j] * vec[j];
+    }
+}
+
+void vec_sc(double* dest, double* vec, double sc, const char op, const size_t* order) {
     for (size_t i = 0; i < *order; i++) {
         if (op == '/') dest[i] = vec[i] / sc;
         else if (op == '*') dest[i] = vec[i] * sc;
@@ -54,26 +62,44 @@ void vec_sc(float* dest, float* vec, float sc, const char op, const size_t* orde
     }
 }
 
-float infNorm(const float* vec, const size_t* order) {
-    float sum = 0;
+void linComb(double* dest, const double a, double* vec1, const double b, double* vec2, const size_t* order) {
+    for (size_t i = 0; i < *order; i++)
+        dest[i] = a * vec1[i] + b * vec2[i];
+}
+
+double infNorm(const double* vec, const size_t* order) {
+    double sum = 0;
     for (size_t i = 0; i < *order; i++)
         if (sum < fabs(vec[i]))
             sum = vec[i];
     return sum;
 }
 
+double norm2(const double* vec, const size_t* order) {
+    double sum = 0;
+    for (size_t i = 0; i < *order; i++)
+        sum += pow(vec[i], 2);
+    return sqrt(sum);
+}
+
 void
-SPInvIt(float* dest, const float** A, const float** LU, float* vec, const float* tol, float* eig, const size_t* order) {
-    float eig_, norm = infNorm(vec, order);
+SPInvIt(double* dest, const double** A, const double** LU, double* vec, const double* tol, double* eig, const size_t* order) {
+    double* temp = malloc(sizeof(double) * *order);
+    double norm = infNorm(vec, order);
     vec_sc(dest, vec, norm, '/', order);
     K = 0;
 
     do {
         solveLU(vec, LU, dest, order);
-        eig_ = *eig, norm = infNorm(vec, order), *eig = 1 / norm;
+        norm = infNorm(vec, order);
         vec_sc(dest, vec, norm, '/', order);
         K++;
-    } while (fabs(*eig - eig_) > *tol);
+        mat_vecMul(temp, A, dest, order);
+        linComb(temp, 1.0, temp, -1./norm, dest, order);
+    } while (norm2(temp, order) / norm2(dest, order) > *tol);
+    *eig = 1 / norm;
+
+    free(temp);
 }
 
 int getIters() {

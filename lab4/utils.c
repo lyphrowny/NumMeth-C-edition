@@ -7,17 +7,17 @@
 
 #include "lab3.h"
 
-void freeMat(const size_t* rows, float** mat) {
+void freeMat(const size_t* rows, double ** mat) {
     for (size_t i = 0; i < *rows; i++)
         free(mat[i]);
     free(mat);
 }
 
-float** allocateMat(const size_t* rows, const size_t* cols) {
-    float** mat = malloc(sizeof(float*) * *rows);
+double ** allocateMat(const size_t* rows, const size_t* cols) {
+    double ** mat = malloc(sizeof(double *) * *rows);
     if (mat != NULL)
         for (size_t i = 0; i < *rows; i++)
-            mat[i] = calloc(*cols, sizeof(float));
+            mat[i] = calloc(*cols, sizeof(double ));
     return mat;
 }
 
@@ -68,7 +68,7 @@ char** readDir(const char* dir_name, size_t* capacity) {
     return filenames;
 }
 
-float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
+double ** readMatrix(size_t* rows, size_t* cols, const char* filename) {
     if (rows == NULL || cols == NULL || filename == NULL)
         return NULL;
 
@@ -80,15 +80,15 @@ float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
         return NULL;
     }
 
-    float** matrix = NULL, ** tmp;
+    double ** matrix = NULL, ** tmp;
     char line[2048];
 
     while (fgets(line, sizeof(line), fp) && strcmp(line, "\n") != 0) { // if empty line, end of input
         if (*cols == 0) { // determine the size of the columns based on the first row
             char* scan = line;
-            float dummy;
+            double dummy;
             int offset = 0;
-            while (sscanf(scan, "%f%n", &dummy, &offset) == 1) {
+            while (sscanf(scan, "%la%n", &dummy, &offset) == 1) {
                 scan += offset;
                 (*cols)++;
             }
@@ -111,7 +111,7 @@ float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
         int offset = 0;
         char* scan = line;
         for (size_t j = 0; j < *cols; ++j) {
-            if (sscanf(scan, "%f%n", matrix[*rows] + j, &offset) == 1)
+            if (sscanf(scan, "%la%n", matrix[*rows] + j, &offset) == 1)
                 scan += offset;
             else
                 matrix[*rows][j] = 0; // could not read, set cell to 0
@@ -122,23 +122,23 @@ float** readMatrix(size_t* rows, size_t* cols, const char* filename) {
     return matrix;
 }
 
-void printMat(const float** mat, const size_t* rows, const size_t* cols) {
+void printMat(const double ** mat, const size_t* rows, const size_t* cols) {
     for (size_t i = 0; i < *rows; ++i) {
         for (size_t j = 0; j < *cols; ++j)
-            printf("%-10.4f ", mat[i][j]);
+            printf("%-20.17lf ", mat[i][j]);
         puts("");
     }
     puts("");
 }
 
-void printVec(const float* vec, const size_t* rows, const char* entrance, const char* exit) {
+void printVec(const double * vec, const size_t* rows, const char* entrance, const char* exit) {
     puts(entrance);
     for (size_t i = 0; i < *rows; ++i)
         printf("%-10.4f ", vec[i]);
     puts(exit);
 }
 
-void appendSolution(const size_t* rows, const float* solution, const char* filename) {
+void appendSolution(const size_t* rows, const double * solution, const char* filename) {
     FILE* fp;
 
     if ((fp = fopen(filename, "r+")) == NULL) {
